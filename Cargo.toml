@@ -1,0 +1,13 @@
+[package]
+name = "axon"
+version = "0.1.0"
+edition = "2021"
+authors = ["Noah Geller <noah@geller.xyz>"]
+
+[lib]
+name = "axon"
+path = "src/lib.rs"
+
+[[bin]]
+name = "axon"
+path = "src/bin/main.rs"
