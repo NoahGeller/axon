@@ -3,10 +3,12 @@
 use std::fs;
 use std::io::{self, Read, Write};
 use std::net::{SocketAddr, TcpListener, TcpStream};
-use std::thread;
+use std::thread::sleep;
+use std::time::Duration;
 
 use crate::http::request::{Method, Request};
 use crate::http::response::{Status, Response};
+use crate::threadpool::ThreadPool;
 
 /// Context associated with a server listening over TCP.
 pub struct Server {
@@ -27,9 +29,13 @@ impl Server {
     }
     /// Listen for new connections.
     pub fn listen(&mut self) {
+        let pool = ThreadPool::new(8);
+
+        println!("Listening for connections...");
+
         for stream in self.listener.incoming() {
             let root = self.root.clone();
-            thread::spawn(move || {
+            pool.execute(|| {
                 handle_client(stream.unwrap(), root);
             });
         }
@@ -50,6 +56,10 @@ fn handle_client(mut stream: TcpStream, root: String) {
         "/" => index,
         uri => uri,
     };
+
+    if uri == "/sleep" {
+        sleep(Duration::new(5, 0));
+    }
 
     let path = format!("{}{}", root, uri);
     let mut response = match request.get_method() {
