@@ -1,4 +1,6 @@
 use std::env;
+use std::collections::HashMap;
+
 use axon::http::server::Server;
 
 pub fn main() {
@@ -14,8 +16,17 @@ pub fn main() {
         _ => 8080
     };
 
+    let routes = HashMap::from([
+        ("/".to_string(), "/index.html".to_string()),
+        ("/about".to_string(), "/about.html".to_string()),
+        ("/contact".to_string(), "/contact.html".to_string()),
+        ("/resume".to_string(), "/resume.html".to_string()),
+    ]);
+
     println!("Welcome to axon! Spinning up your server...");
-    let mut server = Server::new(port, "./root");
+
+    let mut server = Server::new(port, "./root", routes);
     println!("Server created successfully!");
+
     server.listen();
 }
